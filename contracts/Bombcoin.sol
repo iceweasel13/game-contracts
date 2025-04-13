@@ -5,8 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-
-contract Biombcoin is ERC20, Ownable {
+contract Bombcoin is ERC20, Ownable {
     error NotMinter();
 
     uint256 public constant MAX_SUPPLY = 21_000_000e18;
@@ -16,7 +15,9 @@ contract Biombcoin is ERC20, Ownable {
 
     uint256 public amtBurned;
 
-    constructor() ERC20("Bombcoin", "BOMB") Ownable(msg.sender) {}
+    constructor() ERC20("Bombcoin", "BOMB") {
+        _transferOwnership(msg.sender);
+    }
 
     /**
      * @dev Mints tokens when a miner claims their rewards.

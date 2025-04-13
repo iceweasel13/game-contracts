@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
-import {EnumerableSetLib} from "../lib/solady/src/utils/EnumerableSetLib.sol";
-import {FixedPointMathLib} from "../lib/solady/src/utils/FixedPointMathLib.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import "solady/src/utils/EnumerableSetLib.sol";
+import "solady/src/utils/FixedPointMathLib.sol";
 
-import {IBombcoin} from "../interfaces/IBombcoin.sol";
+import {IBombcoin} from "./interfaces/IBombcoin.sol";
 
-import {Hero} from "../types/Hero.sol";
-import {Facility} from "../types/Facility.sol";
-import {NewFacility} from "../types/NewFacility.sol";
+import {Hero} from "./types/Hero.sol";
+import {Facility} from "./types/Facility.sol";
+import {NewFacility} from "./types/NewFacility.sol";
 
-import {Errors} from "../libraries/Errors.sol";
-import {Events} from "../libraries/Events.sol";
+import {Errors} from "./libraries/Errors.sol";
+import {Events} from "./libraries/Events.sol";
 
 
 contract MainGame is Ownable {
@@ -32,7 +32,7 @@ contract MainGame is Ownable {
     uint256 public startBlock;
     bool public miningHasStarted;
 
-    // Her hero’ya benzersiz id ataması yapılır.
+    // Her hero'ya benzersiz id ataması yapılır.
     uint256 universalHeroId;
 
     /// @dev Toplam benzersiz hero sayısı.
@@ -59,7 +59,7 @@ contract MainGame is Ownable {
     /// @dev Başlangıç yakım oranı: %75.
     uint256 public burnPct = 0.75e18;
 
-    /// @dev Oyuncuların toplam hero power’ı.
+    /// @dev Oyuncuların toplam hero power'ı.
     mapping(address => uint256) public playerPower;
 
     /// @dev Oyuncuların bekleyen ödülleri.
@@ -68,16 +68,16 @@ contract MainGame is Ownable {
     /// @dev Oyuncu bombcoin borcu (ödüller güncellendikten sonra).
     mapping(address => uint256) public playerBigcoinDebt;
 
-    /// @dev Farklı hero’ların bilgilerini saklar.
+    /// @dev Farklı hero'ların bilgilerini saklar.
     mapping(uint256 => Hero) public heroes;
 
-    /// @dev Farklı facility’lerin bilgilerini saklar.
+    /// @dev Farklı facility'lerin bilgilerini saklar.
     mapping(uint256 => NewFacility) public facilities;
 
-    /// @dev Oyuncunun sahip olduğu hero’ların id’lerini takip eder.
+    /// @dev Oyuncunun sahip olduğu hero'ların id'lerini takip eder.
     mapping(address => EnumerableSetLib.Uint256Set) public playerHeroesOwned;
 
-    /// @dev Hero id’sini doğrudan hero yapısına eşler.
+    /// @dev Hero id'sini doğrudan hero yapısına eşler.
     mapping(uint256 => Hero) public playerHeroesId;
 
     /// @dev Oyuncunun facility bilgileri.
@@ -86,7 +86,7 @@ contract MainGame is Ownable {
     /// @dev Oyuncuların başlangıçta facility satın alıp almadığını takip eder.
     mapping(address => bool) public initializedStarterFacility;
 
-    /// @dev Oyuncuların ücretsiz başlangıç hero’sunu alıp almadığını takip eder.
+    /// @dev Oyuncuların ücretsiz başlangıç hero'sunu alıp almadığını takip eder.
     mapping(address => bool) public acquiredStarterHero;
 
     /// @dev Belirli bir hero için ikinci el pazar fiyatı.
@@ -106,7 +106,7 @@ contract MainGame is Ownable {
     /// @dev Başlangıç facility satın alma ücreti (ETH cinsinden).
     uint256 public initialFacilityPrice = 0.005 ether;
 
-    /// @dev Başlangıçta verilen hero ve facility index’leri.
+    /// @dev Başlangıçta verilen hero ve facility index'leri.
     uint256 public immutable STARTER_HERO_INDEX;
     uint256 public immutable STARTER_FACILITY_INDEX;
 
@@ -122,7 +122,8 @@ contract MainGame is Ownable {
     //          CONSTRUCTOR
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    constructor() Ownable(msg.sender) {
+    constructor() {
+        _transferOwnership(msg.sender);
         // Starter hero tanımlanır.
         STARTER_HERO_INDEX = ++uniqueHeroCount;
 
@@ -215,7 +216,7 @@ contract MainGame is Ownable {
 
         // Facility içindeki hero sayısı artırılır.
         facility.currMiners++;
-        // Facility’nin tüketilen gücü artar.
+        // Facility'nin tüketilen gücü artar.
         facility.currPowerOutput += hero.stamina;
 
         emit Events.MinerBought(msg.sender, STARTER_HERO_INDEX, 0, universalHeroId, x, y);
@@ -512,7 +513,7 @@ contract MainGame is Ownable {
         uint256 length = set.length();
 
         if (startIndex >= length) {
-            return new Hero;
+            return new Hero[](0);
         }
 
         uint256 remaining = length - startIndex;
